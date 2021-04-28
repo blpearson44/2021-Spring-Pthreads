@@ -1,0 +1,14 @@
+
+Feedback Directory
+==================
+
+This directory contains files with feedback from me. Please do not
+modify or change files in this directory.
+
+
+If the file "MISSING_par_sumsq" file is present, that means your
+github is missing a "par_sumsq.c" file. Follow the project
+instructions, you are supposed to make a copy of the serial version
+("sumsq.c"), call the new copy "par_sumsq.c", and work on that
+version.
+
