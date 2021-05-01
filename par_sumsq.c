@@ -40,8 +40,10 @@ void calculate_square(long number){
 }
 
 // Thread function
-void * thr_fn(int num){
-  calculate_square(num);
+void * thr_fn(void* num){
+  printf("Made it to the function\n");
+  long temp = (long) num;
+  printf("%ld", temp);
   active_threads--;
 }
 
@@ -56,20 +58,38 @@ int main(int argc, char* argv[])
   // get data from command line
   char *filename = argv[1];
   int num_threads = atoi(argv[2]);
+  // check that threads input is valid
+  if (num_threads < 1){
+    printf("Please enter a positive integer greater than one.\n");
+    exit(EXIT_FAILURE);
+  }
+  // verify that input is working
+  printf("There are %d threads working on %s\n", num_threads, filename);
 
   // initialize threads
   pthread_t thr_arr[num_threads];
 
   // read from file
+  printf("Reading files\n");
   FILE* fin = fopen(filename, "r");
   char action;
   long num;
   while(fscanf(fin, "%c %ld\n", &action, &num) == 2) {
     if (action == 'p'){
       // wait for a thread to be available
-      while(active_threads >= num_threads);
-      pthread_create(&thr_arr[active_threads++], NULL, thr_fn, num);
+      
+      // create thread and have it calculate square
+      pthread_create(&thr_arr[active_threads++], NULL, thr_fn, (void *) &num);
 
     }
+    else if (action == 'w'){
+      sleep(num);
+    }
+    else{
+      printf("File error\n");
+      exit(EXIT_FAILURE);
+    }
   }
+
+  printf("Sum:\t%ld\nOdd:\t%ld\nMin:\t%ld\nMax:\t%ld\n", sum, odd, min, max);
 }
