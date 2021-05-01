@@ -7,14 +7,14 @@ default: test
 # you will start with the serial version:
 #
 sumsq: sumsq.c
-	@echo "==== (first compiling 'sumsq') ===="
+	@echo "==== (compiling 'sumsq') ===="
 	gcc -g -O2 --std=c99 -Wall -o sumsq sumsq.c
 
 #
 # eventually you will need to create a parallel version:
 #
 par_sumsq: par_sumsq.c
-	@echo "==== (second compiling 'par_sumsq' ===="
+	@echo "==== (compiling 'par_sumsq') ===="
 	gcc --std=c99 -pthread -o par_sumsq par_sumsq.c 
 
 #
