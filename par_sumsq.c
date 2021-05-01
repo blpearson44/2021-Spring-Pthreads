@@ -42,7 +42,7 @@ void calculate_square(long number){
 // Thread function
 void * thr_fn(void* num){
   printf("Made it to the function\n");
-  long temp = (long) num;
+  long temp = *((long *) num);
   printf("%ld\n", temp);
   active_threads--;
 }
@@ -68,6 +68,7 @@ int main(int argc, char* argv[])
 
   // initialize threads
   pthread_t thr_arr[num_threads];
+  long num_arr[num_threads];
 
   // read from file
   printf("Reading files\n");
@@ -82,8 +83,8 @@ int main(int argc, char* argv[])
       while(active_threads >= num_threads);
       // create thread and have it calculate square
       printf("Execution %d\n", thrs++);
-      pthread_create(&thr_arr[active_threads++], NULL, thr_fn, (void *) &num);
-
+      num_arr[active_threads] = num;
+      pthread_create(&thr_arr[active_threads++], NULL, thr_fn, (void *) &num_arr[active_threads]);
     }
     else if (action == 'w'){
       printf("Sleeping\n");
