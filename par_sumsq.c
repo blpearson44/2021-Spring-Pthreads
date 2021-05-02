@@ -46,7 +46,7 @@ int active_threads = 0;
 queue task_queue;
 // thread locker
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t count_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t empty_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t que_empty = PTHREAD_COND_INITIALIZER;
 
 // basic queue operations
@@ -119,11 +119,11 @@ void * thr_fn(){
     calculate_square(temp);
 
     // block thread if the task queue is empty and not finished
-    pthread_mutex_lock(&count_lock);
+    pthread_mutex_lock(&empty_lock);
     while(is_empty(&task_queue) && !done){
-      pthread_cond_wait(&que_empty, &count_lock);
+      pthread_cond_wait(&que_empty, &empty_lock);
     }
-    pthread_mutex_unlock(&count_lock);
+    pthread_mutex_unlock(&empty_lock);
   }
 
   active_threads--;
@@ -154,7 +154,6 @@ int main(int argc, char* argv[])
   char action;
   long num;
   while(fscanf(fin, "%c %ld\n", &action, &num) == 2) {
-    
     if (action == 'p'){
       // add task to queue and wake threads if asleep
       enqueue(&task_queue, num);
@@ -167,18 +166,16 @@ int main(int argc, char* argv[])
       printf("File error\n");
       exit(EXIT_FAILURE);
     }
+    // if a thread is available and the queue is not empty, create a thread
     if (active_threads < num_threads && !(is_empty(&task_queue)))
     {
       pthread_create(&thr_arr[active_threads++], NULL, thr_fn, NULL);
     }
   }
-  if(!is_empty(&task_queue)){
-    pthread_cond_broadcast(&que_empty);
-  }
+  pthread_cond_broadcast(&que_empty);
+  // wait for queue to be empty
   while(!is_empty(&task_queue)){
-    //printf("not empty\n");
-    
-    sleep(1);
+    sleep(.1); // because of the delays this sleep helps the threads catch up to master
   }
   
   done = true;
@@ -188,7 +185,7 @@ int main(int argc, char* argv[])
   }
 
   pthread_cond_destroy(&que_empty);
-  pthread_mutex_destroy(&count_lock);
+  pthread_mutex_destroy(&empty_lock);
   pthread_mutex_destroy(&lock);
-  printf("Sum:\t%ld\nOdd:\t%ld\nMin:\t%ld\nMax:\t%ld\n", sum, odd, min, max);
+  printf("%ld %ld %ld %ld\n", sum, odd, min, max);
 }
