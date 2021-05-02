@@ -109,8 +109,8 @@ void calculate_square(long number){
 
 // Thread function
 void * thr_fn(){
-  // Keep thread running until finished
-  while(!done){
+  // Keep thread running until done and queue is empty
+  while(!done || !is_empty(&task_queue)){
     // lock queue while accessing data
     pthread_mutex_lock(&lock);
     long temp = task_queue.head->data;
@@ -172,12 +172,9 @@ int main(int argc, char* argv[])
       pthread_create(&thr_arr[active_threads++], NULL, thr_fn, NULL);
     }
   }
+  // wake up blocked threads
   pthread_cond_broadcast(&que_empty);
-  // wait for queue to be empty
-  while(!is_empty(&task_queue)){
-    sleep(.1); // because of the delays this sleep helps the threads catch up to master
-  }
-  
+  // close out threads (will close when done=true and the queue is empty)
   done = true;
   pthread_cond_broadcast(&que_empty);
   for(int i = 0; i < num_threads; i++){
