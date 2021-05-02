@@ -121,7 +121,7 @@ void calculate_square(long number){
 
 // Thread function
 void * thr_fn(){
-  long tid = id++;
+  //long tid = id++;
   while(!done){
     pthread_mutex_lock(&lock);
     long temp = task_queue.head->data;
@@ -141,6 +141,7 @@ void * thr_fn(){
   
 
   active_threads--;
+  return NULL;
   //printf("Thr%ld off\n", tid);
 }
 

@@ -15,7 +15,7 @@ sumsq: sumsq.c
 #
 par_sumsq: par_sumsq.c
 	@echo "==== (compiling 'par_sumsq') ===="
-	gcc --std=c99  -o par_sumsq par_sumsq.c -lpthread 
+	gcc -g -O2 --std=c99 -Wall -o par_sumsq par_sumsq.c -lpthread 
 
 #
 # whenever you want to 'clean and try again', do 'make clean':
@@ -37,32 +37,32 @@ test: sumsq par_sumsq test.txt test2.txt test3.txt
 #	@echo ">>>> (make sure to read the Project notes to understand *why* it's 8 seconds)"
 #	@echo "==== Test 01 (DONE) ===="
 
-	@echo "==== Test 01 ===="
-	@echo "    (1 thread)"
+	@echo "==== Test 01 Sum: 14 ===="
+	@echo "(1 thread) 7s"
 	time -p ./par_sumsq ./test.txt 1
-	@echo "    (2 threads)"
+	@echo "(2 threads) 5s"
 	time -p ./par_sumsq ./test.txt 2
 	@echo "=================="	
 
 	@echo "==== Test 02 ===="
-	@echo "    (1 thread)   "
+	@echo "(1 thread) 6s"
 	time -p ./par_sumsq ./test2.txt 1
-	@echo "    (2 threads)"
+	@echo "(2 threads) 4s"
 	time -p ./par_sumsq ./test2.txt 2
-	@echo "    (3 threads)"
+	@echo "(3 threads) 4s"
 	time -p ./par_sumsq ./test2.txt 3
-	@echo "    (4 threads)"
+	@echo "(4 threads) 3s"
 	time -p ./par_sumsq ./test2.txt 4
 	@echo "=================="
 
 	@echo "==== Test 03 ===="
-	@echo "    (1 thread)   "
+	@echo "(1 thread) 7s"
 	time -p ./par_sumsq ./test3.txt 1
-	@echo "    (2 threads)"
+	@echo "(2 threads) 5s"
 	time -p ./par_sumsq ./test3.txt 2
-	@echo "    (3 threads)"
+	@echo "(3 threads) 5s"
 	time -p ./par_sumsq ./test3.txt 3
-	@echo "    (4 threads)"
+	@echo "(4 threads) 4s"
 	time -p ./par_sumsq ./test3.txt 4
 	@echo "=================="
 
