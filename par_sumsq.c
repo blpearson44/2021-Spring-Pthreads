@@ -43,19 +43,12 @@ long max = INT_MIN;
 bool done = false;
 // this variable will track how many threads are actively being used
 int active_threads = 0;
-int id = 0;
 queue task_queue;
 // thread locker
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t count_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t que_empty = PTHREAD_COND_INITIALIZER;
 
-
-void init(queue* q){
-  q->count = 0;
-  q->head = NULL;
-  q->tail = NULL;
-}
 // basic queue operations
 void enqueue(queue *q, long data){
   node * temp = (node*)malloc(sizeof(node));
@@ -84,23 +77,18 @@ bool is_empty(queue *q){
 }
 
 // to print the queue for testing purposes
-void print_links(node* n){
-  if(n != NULL){
-    printf("P %ld\t", n->data);
-    print_links(n->next);
-  }
-  return;
-}
-void print_queue(queue* q){
-  printf("%d Nodes\n", q->count);
-  print_links(q->head);
-  printf("\n");
-}
-
-
-
-
-
+// void print_links(node* n){
+//   if(n != NULL){
+//     printf("P %ld\t", n->data);
+//     print_links(n->next);
+//   }
+//   return;
+// }
+// void print_queue(queue* q){
+//   printf("%d Nodes\n", q->count);
+//   print_links(q->head);
+//   printf("\n");
+// }
 
 void calculate_square(long number){
   long square = number * number;
@@ -121,28 +109,25 @@ void calculate_square(long number){
 
 // Thread function
 void * thr_fn(){
-  //long tid = id++;
+  // Keep thread running until finished
   while(!done){
+    // lock queue while accessing data
     pthread_mutex_lock(&lock);
     long temp = task_queue.head->data;
-    //printf("A %ld\n", temp);
     dequeue(&task_queue);
     pthread_mutex_unlock(&lock);
     calculate_square(temp);
+
+    // block thread if the task queue is empty and not finished
     pthread_mutex_lock(&count_lock);
     while(is_empty(&task_queue) && !done){
-      //printf("%ld: Empty queue, blocked...\n", tid);
       pthread_cond_wait(&que_empty, &count_lock);
-      //printf("%ld: Unblocked!\n", tid);
-      //print_queue(&task_queue);
     }
     pthread_mutex_unlock(&count_lock);
   }
-  
 
   active_threads--;
   return NULL;
-  //printf("Thr%ld off\n", tid);
 }
 
 int main(int argc, char* argv[])
@@ -171,14 +156,12 @@ int main(int argc, char* argv[])
   while(fscanf(fin, "%c %ld\n", &action, &num) == 2) {
     
     if (action == 'p'){
+      // add task to queue and wake threads if asleep
       enqueue(&task_queue, num);
       pthread_cond_broadcast(&que_empty);
-      //printf("P %ld\n", num);
     }
     else if (action == 'w'){
-      // printf("Sleeping\n");
       sleep(num);
-      //printf("Done sleeping\n");
     }
     else{
       printf("File error\n");
@@ -198,7 +181,6 @@ int main(int argc, char* argv[])
     sleep(1);
   }
   
-  //printf("done!\n");
   done = true;
   pthread_cond_broadcast(&que_empty);
   for(int i = 0; i < num_threads; i++){
