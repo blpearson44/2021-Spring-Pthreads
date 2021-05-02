@@ -6,10 +6,11 @@
  * Chose to recreate file from scratch
 */
 /* TODO
- * [ ] Implement task list as singly-linked list
- * [ ] Use mutex to protect task queue and protect global aggregate variables
- * [ ] Remove extra printf statements
- * [ ] Don't pass parameters to workers, use global variables to coordinate
+ * [x] Implement task list as singly-linked list
+ * [x] Use mutex to protect task queue and protect global aggregate variables
+ * [x] Remove extra printf statements
+ * [x] Don't pass parameters to workers, use global variables to coordinate
+ * [ ] Use cond variables to block/wake threads
 */
 
 
@@ -46,6 +47,7 @@ queue task_queue;
 // thread locker
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t count_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t que_empty = PTHREAD_COND_INITIALIZER;
 
 
 void init(queue* q){
@@ -150,13 +152,11 @@ int main(int argc, char* argv[])
   }
   // initialize threads
   pthread_t thr_arr[num_threads];
-  long num_arr[num_threads];
 
   // read from file
   FILE* fin = fopen(filename, "r");
   char action;
   long num;
-  int thrs = 0; // for debugging
   while(fscanf(fin, "%c %ld\n", &action, &num) == 2) {
     if (action == 'p'){
       pthread_mutex_lock(&lock);
@@ -184,6 +184,8 @@ int main(int argc, char* argv[])
     pthread_join(thr_arr[i], NULL);
   }
 
+  pthread_cond_destroy(&que_empty);
+  pthread_mutex_destroy(&count_lock);
   pthread_mutex_destroy(&lock);
   printf("Sum:\t%ld\nOdd:\t%ld\nMin:\t%ld\nMax:\t%ld\n", sum, odd, min, max);
 }
