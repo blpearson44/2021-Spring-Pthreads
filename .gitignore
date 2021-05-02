@@ -1,3 +1,6 @@
 a.out
 par_sumsq
 sumsq
+.clang
+.vscode/
+*.txt
