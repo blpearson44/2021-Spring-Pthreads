@@ -34,6 +34,20 @@ typedef struct queue
   node * tail;
 }queue;
 
+// shared variables
+long sum = 0;
+long odd = 0;
+long min = INT_MAX;
+long max = INT_MIN;
+bool done = false;
+// this variable will track how many threads are actively being used
+int active_threads = 0;
+queue task_queue;
+// thread locker
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t count_lock = PTHREAD_MUTEX_INITIALIZER;
+
+
 void init(queue* q){
   q->count = 0;
   q->head = NULL;
@@ -50,7 +64,11 @@ void enqueue(queue *q, long data){
     q->tail->next = temp;
   }
   q->tail = temp;
+
+  pthread_mutex_unlock(&count_lock);
   q->count++;
+  pthread_mutex_unlock(&count_lock);
+
 }
 void dequeue(queue *q){
   if(q->count < 1){
@@ -60,7 +78,9 @@ void dequeue(queue *q){
   q->head = q->head->next;
   temp->next = NULL;
   free(temp);
+  pthread_mutex_lock(&count_lock);
   q->count--;
+  pthread_mutex_unlock(&count_lock);
 }
 bool is_empty(queue *q){
   return q->head == NULL;
@@ -81,18 +101,9 @@ void print_queue(queue* q){
 }
 
 
-// shared variables
-long sum = 0;
-long odd = 0;
-long min = INT_MAX;
-long max = INT_MIN;
-bool done = false;
-// this variable will track how many threads are actively being used
-int active_threads = 0;
-queue task_queue;
 
-// thread locker
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+
 
 void calculate_square(long number){
   long square = number * number;
@@ -172,5 +183,7 @@ int main(int argc, char* argv[])
   for(int i = 0; i < num_threads; i++){
     pthread_join(thr_arr[i], NULL);
   }
+
+  pthread_mutex_destroy(&lock);
   printf("Sum:\t%ld\nOdd:\t%ld\nMin:\t%ld\nMax:\t%ld\n", sum, odd, min, max);
 }
