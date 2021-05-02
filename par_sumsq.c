@@ -46,7 +46,6 @@ queue task_queue;
 // thread locker
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t count_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t que_empty = PTHREAD_COND_INITIALIZER;
 
 
 void init(queue* q){
@@ -131,12 +130,6 @@ void * thr_fn(){
   pthread_mutex_unlock(&lock);
   calculate_square(temp);
   active_threads--;
-
-  pthread_mutex_lock(&lock);
-  while(is_empty(&task_queue) && !done){
-    pthread_cond_wait(&que_empty, &lock);
-  }
-  pthread_mutex_unlock(&lock);
 }
 
 int main(int argc, char* argv[])
@@ -168,7 +161,6 @@ int main(int argc, char* argv[])
     if (action == 'p'){
       pthread_mutex_lock(&lock);
       enqueue(&task_queue, num);
-      pthread_cond_signal(&que_empty);
       pthread_mutex_unlock(&lock);
     }
     else if (action == 'w'){
@@ -183,9 +175,7 @@ int main(int argc, char* argv[])
       pthread_create(&thr_arr[active_threads++], NULL, thr_fn, NULL);
     }
   }
-  done = true;
   while(!(is_empty(&task_queue))){
-    pthread_cond_signal(&que_empty);
     if(active_threads<num_threads){
       pthread_create(&thr_arr[active_threads++], NULL, thr_fn, NULL);
     }
