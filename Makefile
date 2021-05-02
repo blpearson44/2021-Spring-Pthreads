@@ -29,13 +29,13 @@ clean:
 # below is some makefile magic, don't worry about how it works for now
 #
 test: sumsq par_sumsq test.txt
-	@echo "==== Test 01 (baseline - serial) ===="
-	@echo ">>>> Result should be 14 2 1 3"
-	@echo ">>>> ... with 1 worker 'real' time should be 8 seconds"
-	time -p ./sumsq ./test.txt 2>&1
-	@echo ">>>> (above, you should see 'real' as 8 seconds and the others as zero)"
-	@echo ">>>> (make sure to read the Project notes to understand *why* it's 8 seconds)"
-	@echo "==== Test 01 (DONE) ===="
+#	@echo "==== Test 01 (baseline - serial) ===="
+#	@echo ">>>> Result should be 14 2 1 3"
+#	@echo ">>>> ... with 1 worker 'real' time should be 8 seconds"
+#	time -p ./sumsq ./test.txt 2>&1
+#	@echo ">>>> (above, you should see 'real' as 8 seconds and the others as zero)"
+#	@echo ">>>> (make sure to read the Project notes to understand *why* it's 8 seconds)"
+#	@echo "==== Test 01 (DONE) ===="
 
 	@echo "==== Test 02 (1 thread) ===="
 	time -p ./par_sumsq ./test.txt 1
