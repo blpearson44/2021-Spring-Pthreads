@@ -56,7 +56,6 @@ void dequeue(queue *q){
   if(q->count < 1){
     return; // check for null
   }
-  printf("R: %ld\n", q->head->data);
   node * temp = q->head;
   q->head = q->head->next;
   temp->next = NULL;
@@ -118,7 +117,6 @@ void * thr_fn(){
   long temp = task_queue.head->data;
   dequeue(&task_queue);
   pthread_mutex_unlock(&lock);
-  printf("Data: %ld\n", temp);
   calculate_square(temp);
   active_threads--;
 }
@@ -150,19 +148,11 @@ int main(int argc, char* argv[])
   int thrs = 0; // for debugging
   while(fscanf(fin, "%c %ld\n", &action, &num) == 2) {
     if (action == 'p'){
-      // wait for a thread to be available
-      // while(active_threads >= num_threads);
-      // create thread and have it calculate square
-      //printf("Thread %d \n", active_threads);
-      // num_arr[active_threads] = num;
-      // pthread_create(&thr_arr[active_threads++], NULL, thr_fn, (void *) &num_arr[active_threads]);
       pthread_mutex_lock(&lock);
       enqueue(&task_queue, num);
       pthread_mutex_unlock(&lock);
-      printf("Num: %ld\t Tail: %ld\t", num, task_queue.tail->data);
     }
     else if (action == 'w'){
-      //printf("Sleeping\n");
       sleep(num);
     }
     else{
@@ -171,19 +161,16 @@ int main(int argc, char* argv[])
     }
     if (active_threads < num_threads && !(is_empty(&task_queue)))
     {
-      printf("Thr %d\n", active_threads);
       pthread_create(&thr_arr[active_threads++], NULL, thr_fn, NULL);
     }
   }
   while(!(is_empty(&task_queue))){
     if(active_threads<num_threads){
-      printf("Thr %d\n", active_threads);
       pthread_create(&thr_arr[active_threads++], NULL, thr_fn, NULL);
     }
   }
   for(int i = 0; i < num_threads; i++){
     pthread_join(thr_arr[i], NULL);
   }
-  printf("All joined up, Empty: %d\n", is_empty(&task_queue));
   printf("Sum:\t%ld\nOdd:\t%ld\nMin:\t%ld\nMax:\t%ld\n", sum, odd, min, max);
 }
