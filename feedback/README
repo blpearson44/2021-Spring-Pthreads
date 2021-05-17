@@ -12,3 +12,6 @@ instructions, you are supposed to make a copy of the serial version
 ("sumsq.c"), call the new copy "par_sumsq.c", and work on that
 version.
 
+
+The file "all-tests.output.txt" shows the output of the last time that
+*I* ran test suite
