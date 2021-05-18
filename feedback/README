@@ -15,3 +15,44 @@ version.
 
 The file "all-tests.output.txt" shows the output of the last time that
 *I* ran test suite
+
+
+Final Grade Comments
+====================
+
+The 'grade.txt' file contains your final grade on the project (out of
+220). There may be individualized comments in it, but for the most
+part it will be a result of the following:
+
+* Below the grade, individualized comments will be in (parens)
+
+* Further down you'll see the output i got running your solution.
+
+* If the test file cannot run at all, you have a big risk of zero. If
+  it looks to me like you've made a concerted effort, you should see
+  between 60 and 140 points.
+
+* Your github repository should contain a history showing how you've
+  worked on the project. If you just dropped a fully working version
+  into github out of nowhere, then that's a big risk of zero
+
+* If your par_sumsq.c file is not stand-alone, then that's likely to
+  be graded as "does not compile". Instructions were clearly to keep
+  par_sumsq.c self-contained.
+
+* If the 'user' time is not close to zero for all cases, deduction.
+
+* Correct execution results are important, if the "fingerprint" isn't
+  correct, it means you're not locking etc correctly.
+
+* Compilation should be clean. You shouldn't have warning.
+
+* Check the test timing output; if it doesn't follow the correct
+  expected ('real') time, it'll be deductions.
+
+* I think many of you missed to test with virtualbox and number of
+  cores more than 1 ... so you won't actually catch lots of issues
+  (like actual data races!)
+
+
+
